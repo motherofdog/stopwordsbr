@@ -1,437 +1,213 @@
-#'artigos
-#'
-#'Removes Brazilian Portuguese articles from text.
-#'
-#'Includes definite and indefinite articles, contractions with prepositions,
-#'feminine and masculine and singular and plural versions.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese articles.
-#'@export
-#'
-artigos <- function(text_in_portuguesebr) {
-  artigos <- "\\b(o|a|os|as|um|uma|uns|umas|ao|à|aos|às|do|da|dos|das|no|na|nos|nas|pelo|pela|pelos|pelas)\\b"
-  clean_textbr <- gsub(artigos, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
-}
+# R/stopwordsbr.R — public functions (thin wrappers around the dispatcher)
 
-
-#'preposicoes
+#' Remove Brazilian Portuguese articles
 #'
-#'Removes Brazilian Portuguese prepositions from text.
+#' Removes definite and indefinite articles (including contractions with
+#' prepositions) from Brazilian Portuguese text.
 #'
-#'Includes masculine and feminine and singular and plural versions.
+#' @param text_in_portuguesebr A character vector, or a \pkg{quanteda}
+#'   \code{tokens}, \code{corpus}, or \code{dfm} object. Other classes raise
+#'   an error.
+#' @param ... Forwarded to the removal engine. For character input this is
+#'   \code{gsub()} (\code{ignore.case} defaults to \code{TRUE}); for quanteda
+#'   input it is \code{tokens_remove()} / \code{dfm_remove()} (e.g.
+#'   \code{padding}, \code{case_insensitive}).
 #'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese prepositions.
-#'
-#'@export
-#'
-preposicoes <- function(text_in_portuguesebr) {
-  preposicoes <- "\\b(de|da|do|das|dos|em|na|no|nas|nos|por|pelo|pela|pelos|pelas|a|ao|à|às|para|com|sem|sobre|entre|contra|perante|após|até|desde|sob|trás)\\b"
-  clean_textbr <- gsub(preposicoes, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
-}
-
-#'conjuncoes
-#'
-#'Removes Brazilian Portuguese conjunctions from text.
-#'
-#'Includes full expressions.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese conjunctions.
-#'
-#'@export
-conjuncoes <- function(text_in_portuguesebr) {
-  conjuncoes <- "\\b(e|ou|mas|porém|entretanto|contudo|nem|tampouco|que|porque|se|quando|enquanto|embora|apesar de|como|assim que|desde que|a fim de que|para que|caso)\\b"
-  clean_textbr <- gsub(conjuncoes, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
-}
-
-#'adv_lugar
-#'
-#' Removes Brazilian Portuguese place adverbs from text.
-#'
-#'@param A text file imported into R.
-#'
-#' @return Complete text without Brazilian Portuguese place adverbs.
+#' @return An object of the same class as the input, with articles removed.
 #' @export
-adv_lugar <- function(text_in_portuguesebr) {
-  adverbs_lugar <- "\\b(aqui|aí|ali|lá|acolá|cá|dentro|fora|em cima|embaixo|perto|longe|adiante|atrás|ao lado|em frente|debaixo)\\b"
-  clean_textbr <- gsub(adverbs_lugar, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+artigos <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_artigos, ...)
 }
 
-#'adv_tempo
+#' Remove Brazilian Portuguese prepositions
 #'
-#' Removes Brazilian Portuguese most common temporal adverbs from text.
-#'
-#'@param A text file imported into R.
-#'
-#' @return Complete text without Brazilian Portuguese most common temporal adverbs.
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without prepositions.
 #' @export
-adv_tempo <- function(text_in_portuguesebr) {
-  adverbs_tempo <- "\\b(agora|hoje|ontem|amanhã|cedo|tarde|sempre|nunca|já|logo|depois|antes|enquanto|ainda)\\b"
-  clean_textbr <- gsub(adverbs_tempo, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+preposicoes <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_preposicoes, ...)
 }
+
+#' Remove Brazilian Portuguese conjunctions
+#'
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without conjunctions.
 #' @export
+conjuncoes <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_conjuncoes, ...)
+}
 
-#'adv_modo
+#' Remove Brazilian Portuguese place adverbs
 #'
-#' Removes Brazilian Portuguese most common mode adverbs from text.
-#'
-#'@param A text file imported into R.
-#'
-#' @return Complete text without Brazilian Portuguese most common mode adverbs.
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without place adverbs.
 #' @export
-adv_modo <- function(text_in_portuguesebr) {
-  adverbs_modo <- "\\b(bem|mal|assim|depressa|devagar|calmamente|rapidamente|cuidadosamente|facilmente|dificilmente)\\b"
-  clean_textbr <- gsub(adverbs_modo, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+adv_lugar <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_adv_lugar, ...)
 }
 
-#'adv_grau
+#' Remove Brazilian Portuguese temporal adverbs
 #'
-#' Removes Brazilian Portuguese most common quantity adverbs from text.
-#'
-#'@param A text file imported into R.
-#'
-#' @return Complete text without Brazilian Portuguese most common quantity adverbs.
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without temporal adverbs.
 #' @export
-adv_grau <- function(text_in_portuguesebr) {
-  adverbs_grau <- "\\b(muito|pouco|mais|menos|tanto|tão|demais|bastante|quase|completamente)\\b"
-  clean_textbr <- gsub(adverbs_grau, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+adv_tempo <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_adv_tempo, ...)
 }
 
-#'adv_afirmacao
+#' Remove Brazilian Portuguese mode adverbs
 #'
-#' Removes Brazilian Portuguese most common affirmation adverbs from text.
-#'
-#'@param A text file imported into R.
-#'
-#' @return Complete text without Brazilian Portuguese most common affirmation adverbs.
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without mode adverbs.
 #' @export
-adv_afirmacao <- function(text_in_portuguesebr) {
-  adverbs_afirmacao <- "\\b(sim|certamente|realmente|efetivamente|decididamente)\\b"
-  clean_textbr <- gsub(adverbs_afirmacao, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+adv_modo <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_adv_modo, ...)
 }
 
-#'adv_negacao
+#' Remove Brazilian Portuguese quantity adverbs
 #'
-#' Removes Brazilian Portuguese most common negation adverbs from text.
-#'
-#'@param A text file imported into R.
-#'
-#' @return Complete text without Brazilian Portuguese most common negation adverbs.
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without quantity adverbs.
 #' @export
-adv_negacao <- function(text_in_portuguesebr) {
-  adverbs_negacao <- "\\b(não|nunca|jamais|de modo algum)\\b"
-  clean_textbr <- gsub(adverbs_negacao, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+adv_grau <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_adv_grau, ...)
 }
 
-#'adv_duvida
+#' Remove Brazilian Portuguese affirmation adverbs
 #'
-#' Removes Brazilian Portuguese most common doubt adverbs from text.
-#'
-#'@param A text file imported into R.
-#'
-#' @return Complete text without Brazilian Portuguese most common doubt adverbs.
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without affirmation adverbs.
 #' @export
-adv_duvida <- function(text_in_portuguesebr) {
-  adverbs_duvida <- "\\b(talvez|possivelmente|provavelmente|quiçá)\\b"
-  clean_textbr <- gsub(adverbs_duvida, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+adv_afirmacao <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_adv_afirmacao, ...)
 }
 
-
-#'todos_adverbios
+#' Remove Brazilian Portuguese negation adverbs
 #'
-#' Removes Brazilian Portuguese all adverbs included in other functions from text.
-#'
-#'@param A text file imported into R.
-#'
-#' @return Complete text without most common Brazilian Portuguese adverbs.
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without negation adverbs.
 #' @export
-todos_adverbios <- function(text_in_portuguesebr) {
-  adverbios <- c("aqui", "aí", "ali", "lá", "acolá", "cá", "dentro", "fora", "em cima",
-                 "embaixo", "perto", "longe", "adiante", "atrás", "ao lado", "em frente",
-                 "debaixo", "agora", "hoje", "ontem", "amanhã", "cedo", "tarde", "sempre",
-                 "nunca", "já", "logo", "depois", "antes", "enquanto", "ainda", "bem",
-                 "mal", "assim", "depressa", "devagar", "calmamente", "rapidamente",
-                 "cuidadosamente", "facilmente", "dificilmente", "muito", "pouco", "mais",
-                 "menos", "tanto", "tão", "demais", "bastante", "quase", "completamente",
-                 "sim", "certamente", "realmente", "efetivamente", "decididamente", "não",
-                 "nunca", "jamais", "de modo algum", "talvez", "possivelmente",
-                 "provavelmente", "quiçá")
-
-  pattern <- paste0("\\b(", paste(adverbios, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+adv_negacao <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_adv_negacao, ...)
 }
 
-#' Removes Brazilian Portuguese personal pronouns from text.
+#' Remove Brazilian Portuguese doubt adverbs
 #'
-#'Includes reflexive, feminine and masculine and singular and plural versions.
-#'
-#'@param A text file imported into R.
-#'
-#' @return Complete text without Brazilian Portuguese personal pronouns.
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without doubt adverbs.
 #' @export
-prn_pessoais <- function(text_in_portuguesebr) {
-  pronomes_pessoais <- c("a", "as", "comigo", "conosco", "consigo", "contigo",
-                         "convosco", "ela", "elas", "ele", "eles", "eu",
-                         "lhe", "lhes", "me", "mim", "nos", "nós", "o", "os",
-                         "se", "si", "te", "ti", "tu", "vos", "vós")
-  pattern <- paste0("\\b(", paste(pronomes_pessoais, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+adv_duvida <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_adv_duvida, ...)
 }
 
-#'prn_tratamento
+#' Remove all Brazilian Portuguese adverbs
 #'
-#'Removes Brazilian Portuguese title pronouns from text.
-#'
-#'Includes feminine and masculine versions and abbreviations.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese title pronouns.
-#'@export
-prn_tratamento <- function(text_in_portuguesebr) {
-  pronomes_tratamento <- c("senhor", "senhora", "senhorita", "você", "vossa alteza",
-                           "vossa eminência", "vossa excelência", "vossa magnificência",
-                           "vossa majestade", "vossa majestade imperial", "vossa mercê",
-                           "vossa onipotência", "vossa paternidade", "vossa reverendíssima",
-                           "vossa santidade", "vossa senhoria", "sr.", "sr.ª", "srta.",
-                           "v.", "v. a.", "v. em.ª", "v. ex.ª", "v. m.", "v. m. i.",
-                           "v. mag.ª", "v. rev.mª", "v. s.", "v. s.ª", "v.m.cê", "v.p")
-  pattern <- paste0("\\b(", paste(pronomes_tratamento, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without adverbs.
+#' @export
+todos_adverbios <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .all_adverbios, ...)
 }
 
-#'prn_diretos
+#' Remove Brazilian Portuguese personal pronouns
 #'
-#'Removes Brazilian Portuguese direct pronouns from text.
-#'
-#'Includes reflexive, feminine and masculine and singular and plural versions.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese direct pronouns.
-#'@export
-prn_diretos <- function(text_in_portuguesebr) {
-  pronomes_diretos <- c("me", "te", "o", "a", "nos", "vos", "os", "as")
-  pattern <- paste0("\\b(", paste(pronomes_diretos, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without personal pronouns.
+#' @export
+prn_pessoais <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_prn_pessoais, ...)
 }
 
-#'prn_indiretos
+#' Remove Brazilian Portuguese title / treatment pronouns
 #'
-#'Removes Brazilian Portuguese indirect pronouns from text.
-#'
-#'Includes reflexive, feminine and masculine and singular and plural versions.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese indirect pronouns.
-#'@export
-prn_indiretos <- function(text_in_portuguesebr) {
-  pronomes_indiretos <- c("me", "te", "lhe", "nos", "vos", "lhes")
-  pattern <- paste0("\\b(", paste(pronomes_indiretos, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without title pronouns.
+#' @export
+prn_tratamento <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_prn_tratamento, ...)
 }
 
-#'prn_possessivos
+#' Remove Brazilian Portuguese direct pronouns
 #'
-#'Removes Brazilian Portuguese possessive pronouns from text.
-#'
-#'Includes feminine and masculine and singular and plural versions.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese possessive pronouns.
-#'@export
-prn_possessivos <- function(text_in_portuguesebr) {
-  pronomes_possessivos <- c("meu", "minha", "meus", "minhas", "teu", "tua", "teus", "tuas", "seu", "sua", "seus", "suas", "nosso", "nossa", "nossos", "nossas", "vosso", "vossa", "vossos", "vossas")
-  pattern <- paste0("\\b(", paste(pronomes_possessivos, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without direct pronouns.
+#' @export
+prn_diretos <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_prn_diretos, ...)
 }
 
-#'prn_demonstrativos
+#' Remove Brazilian Portuguese indirect pronouns
 #'
-#'Removes Brazilian Portuguese demonstrative pronouns from text.
-#'
-#'Includes feminine and masculine and singular and plural versions.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese demonstrative pronouns.
-#'@export
-prn_demonstrativos <- function(text_in_portuguesebr) {
-  pronomes_demonstrativos <- c("este", "esta", "estes", "estas", "esse", "essa", "esses", "essas", "aquele", "aquela", "aqueles", "aquelas", "isto", "isso", "aquilo",
-                               "própria", "próprias", "próprio", "próprios", "semelhante", "semelhantes",
-                               "tais", "tal", "mesma", "mesmas", "mesmo", "mesmos")
-  pattern <- paste0("\\b(", paste(pronomes_demonstrativos, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without indirect pronouns.
+#' @export
+prn_indiretos <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_prn_indiretos, ...)
 }
 
-
-#'prn_relativos
+#' Remove Brazilian Portuguese possessive pronouns
 #'
-#'Removes Brazilian Portuguese relative pronouns from text.
-#'
-#'Includes feminine and masculine and singular and plural versions.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese relative pronouns.
-#'@export
-prn_relativos <- function(text_in_portuguesebr) {
-  pronomes_relativos <- c("que", "quem", "onde", "cujo", "cuja", "cujos", "cujas",
-                          "quanto", "quanta", "quantos", "quantas", "onde", "aonde")
-  pattern <- paste0("\\b(", paste(pronomes_relativos, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without possessive pronouns.
+#' @export
+prn_possessivos <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_prn_possessivos, ...)
 }
 
-#'prn_interrogativos
+#' Remove Brazilian Portuguese demonstrative pronouns
 #'
-#'Removes Brazilian Portuguese interrogative pronouns from text.
-#'
-#'Includes feminine and masculine and singular and plural versions.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese personal pronouns.
-#'@export
-prn_interrogativos <- function(text_in_portuguesebr) {
-  pronomes_interrogativos <- c("quem", "que", "qual", "quais", "quanto", "quanta", "quantos", "quantas")
-  pattern <- paste0("\\b(", paste(pronomes_interrogativos, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without demonstrative pronouns.
+#' @export
+prn_demonstrativos <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_prn_demonstrativos, ...)
 }
 
-#'prn_indefinidos
+#' Remove Brazilian Portuguese relative pronouns
 #'
-#'Removes Brazilian Portuguese undefined pronouns from text.
-#'
-#'Includes feminine and masculine and singular and plural versions.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese undefined pronouns.
-#'@export
-prn_indefinidos <- function(text_in_portuguesebr) {
-  pronomes_indefinidos <- c("alguém", "ninguém", "tudo", "nada", "algum", "alguma", "alguns",
-                            "algumas", "nenhum", "nenhuma", "nenhuns", "nenhumas", "todo", "toda", "todos",
-                            "todas", "outro", "outra", "outros", "outras", "muito", "muita", "muitos", "muitas",
-                            "pouco", "pouca", "poucos", "poucas", "certo", "certa", "certos", "certas", "vário",
-                            "vária", "vários", "várias", "tanto", "tanta", "tantos", "tantas", "quanto", "quanta",
-                            "quantos", "quantas", "qualquer", "quaisquer", "cada", "um", "uma", "uns", "umas")
-  pattern <- paste0("\\b(", paste(pronomes_indefinidos, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without relative pronouns.
+#' @export
+prn_relativos <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_prn_relativos, ...)
 }
 
-#'todos_pronomes
+#' Remove Brazilian Portuguese interrogative pronouns
 #'
-#'Removes all Brazilian Portuguese pronouns from text.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese pronouns.
-#'@export
-todos_pronomes <- function(text_in_portuguesebr) {
-  pronomes <- c("alguém", "ninguém", "tudo", "nada", "algum", "alguma", "alguns",
-                "algumas", "nenhum", "nenhuma", "nenhuns", "nenhumas", "todo", "toda", "todos",
-                "todas", "outro", "outra", "outros", "outras", "muito", "muita", "muitos", "muitas",
-                "pouco", "pouca", "poucos", "poucas", "certo", "certa", "certos", "certas", "vário",
-                "vária", "vários", "várias", "tanto", "tanta", "tantos", "tantas", "quanto", "quanta",
-                "quantos", "quantas", "qualquer", "quaisquer", "cada", "um", "uma", "uns", "umas",
-                "quem", "que", "qual", "quais", "quanto", "quanta", "quantos", "quantas",
-                "que", "quem", "onde", "cujo", "cuja", "cujos", "cujas", "quanto", "quanta",
-                "quantos", "quantas", "onde", "aonde", "este", "esta", "estes", "estas", "esse",
-                "essa", "esses", "essas", "aquele", "aquela", "aqueles", "aquelas", "isto", "isso",
-                "aquilo", "própria", "próprias", "próprio", "próprios", "semelhante", "semelhantes",
-                "tais", "tal", "mesma", "mesmas", "mesmo", "mesmos", "meu", "minha", "meus", "minhas",
-                "teu", "tua", "teus", "tuas", "seu", "sua", "seus", "suas", "nosso", "nossa", "nossos",
-                "nossas", "vosso", "vossa", "vossos", "vossas", "me", "te", "o", "a", "nos", "vos",
-                "os", "as", "senhor", "senhora", "senhorita", "você", "vossa alteza", "vossa eminência",
-                "vossa excelência", "vossa magnificência", "vossa majestade", "vossa majestade imperial",
-                "vossa mercê", "vossa onipotência", "vossa paternidade", "vossa reverendíssima",
-                "vossa santidade", "vossa senhoria", "sr.", "sr.ª", "srta.", "v.", "v. a.", "v. em.ª",
-                "v. ex.ª", "v. m.", "v. m. i.", "v. mag.ª", "v. rev.mª", "v. s.", "v. s.ª", "v.m.cê", "v.p",
-                "a", "as", "comigo", "conosco", "consigo", "contigo", "convosco", "ela", "elas", "ele",
-                "eles", "eu", "lhe", "lhes", "me", "mim", "nos", "nós", "o", "os", "se", "si", "te", "ti",
-                "tu", "vos", "vós")
-  pattern <- paste0("\\b(", paste(pronomes, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without interrogative pronouns.
+#' @export
+prn_interrogativos <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_prn_interrogativos, ...)
 }
 
-#'agorapare
+#' Remove Brazilian Portuguese indefinite pronouns
 #'
-#'Removes all Brazilian Portuguese stopwords included in other functions from text.
-#'
-#'@param A text file imported into R.
-#'
-#'@return Complete text without Brazilian Portuguese stopwords included in other functions.
-#'@export
-agorapare <- function(text_in_portuguesebr) {
-  palavras <- c("aqui", "aí", "ali", "lá", "acolá", "cá", "dentro", "fora", "em cima",
-                "embaixo", "perto", "longe", "adiante", "atrás", "ao lado", "em frente",
-                "debaixo", "agora", "hoje", "ontem", "amanhã", "cedo", "tarde", "sempre",
-                "nunca", "já", "logo", "depois", "antes", "enquanto", "ainda", "bem",
-                "mal", "assim", "depressa", "devagar", "calmamente", "rapidamente",
-                "cuidadosamente", "facilmente", "dificilmente", "muito", "pouco", "mais",
-                "menos", "tanto", "tão", "demais", "bastante", "quase", "completamente",
-                "sim", "certamente", "realmente", "efetivamente", "decididamente", "não",
-                "nunca", "jamais", "de modo algum", "talvez", "possivelmente",
-                "provavelmente", "quiçá", "alguém", "ninguém", "tudo", "nada", "algum", "alguma", "alguns",
-                "algumas", "nenhum", "nenhuma", "nenhuns", "nenhumas", "todo", "toda", "todos",
-                "todas", "outro", "outra", "outros", "outras", "muito", "muita", "muitos", "muitas",
-                "pouco", "pouca", "poucos", "poucas", "certo", "certa", "certos", "certas", "vário",
-                "vária", "vários", "várias", "tanto", "tanta", "tantos", "tantas", "quanto", "quanta",
-                "quantos", "quantas", "qualquer", "quaisquer", "cada", "um", "uma", "uns", "umas",
-                "quem", "que", "qual", "quais", "quanto", "quanta", "quantos", "quantas",
-                "que", "quem", "onde", "cujo", "cuja", "cujos", "cujas", "quanto", "quanta",
-                "quantos", "quantas", "onde", "aonde", "este", "esta", "estes", "estas", "esse",
-                "essa", "esses", "essas", "aquele", "aquela", "aqueles", "aquelas", "isto", "isso",
-                "aquilo", "própria", "próprias", "próprio", "próprios", "semelhante", "semelhantes",
-                "tais", "tal", "mesma", "mesmas", "mesmo", "mesmos", "meu", "minha", "meus", "minhas",
-                "teu", "tua", "teus", "tuas", "seu", "sua", "seus", "suas", "nosso", "nossa", "nossos",
-                "nossas", "vosso", "vossa", "vossos", "vossas", "me", "te", "o", "a", "nos", "vos",
-                "os", "as", "senhor", "senhora", "senhorita", "você", "vossa alteza", "vossa eminência",
-                "vossa excelência", "vossa magnificência", "vossa majestade", "vossa majestade imperial",
-                "vossa mercê", "vossa onipotência", "vossa paternidade", "vossa reverendíssima",
-                "vossa santidade", "vossa senhoria", "sr.", "sr.ª", "srta.", "v.", "v. a.", "v. em.ª",
-                "v. ex.ª", "v. m.", "v. m. i.", "v. mag.ª", "v. rev.mª", "v. s.", "v. s.ª", "v.m.cê", "v.p",
-                "a", "as", "comigo", "conosco", "consigo", "contigo", "convosco", "ela", "elas", "ele",
-                "eles", "eu", "lhe", "lhes", "me", "mim", "nos", "nós", "o", "os", "se", "si", "te", "ti",
-                "tu", "vos", "vós", "o", "a", "os", "as", "um", "uma", "uns", "umas", "ao", "à", "aos", "às",
-                "do", "da", "dos", "das", "no", "na", "nos", "nas", "pelo", "pela", "pelos", "pelas", "de",
-                "da", "do", "das", "dos", "em", "na", "no", "nas", "nos", "por", "pelo", "pela", "pelos",
-                "pelas", "a", "ao", "à", "às", "para", "com", "sem", "sobre", "entre", "contra", "perante",
-                "após", "até", "desde", "sob", "trás", "e", "ou", "mas", "porém", "entretanto", "contudo",
-                "nem", "tampouco", "que", "porque", "se", "quando", "enquanto", "embora", "apesar de",
-                "como", "assim que", "desde que", "a fim de que", "para que", "caso")
-
-  pattern <- paste0("\\b(", paste(palavras, collapse = "|"), ")\\b")
-  clean_textbr <- gsub(pattern, "", text_in_portuguesebr, ignore.case = TRUE)
-  return(clean_textbr)
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without indefinite pronouns.
+#' @export
+prn_indefinidos <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .list_prn_indefinidos, ...)
 }
 
+#' Remove all Brazilian Portuguese pronouns
+#'
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without pronouns.
+#' @export
+todos_pronomes <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .all_pronomes, ...)
+}
 
+#' Remove all Brazilian Portuguese stopwords covered by this package
+#'
+#' Convenience shortcut that removes every category in one call: articles,
+#' prepositions, conjunctions, all adverbs, and all pronouns.
+#'
+#' @inheritParams artigos
+#' @return An object of the same class as the input, without any of the
+#'   package's Brazilian Portuguese stopwords.
+#' @export
+agorapare <- function(text_in_portuguesebr, ...) {
+  remove_stopwords_(text_in_portuguesebr, .all_agorapare, ...)
+}

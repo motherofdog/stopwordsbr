@@ -9,10 +9,12 @@ Maintainer: The package maintainer <larissa@larissapeixoto.com>
 Description: This package makes the removal of Brazilian Portuguese words easier from corpuses
   and other forms of text. 
   Users can remove stopwords by grammatical class according to need.
-License: GPL >= 3 
+License: GPL (>= 3) 
 Encoding: UTF-8
+Imports:
+    quanteda
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

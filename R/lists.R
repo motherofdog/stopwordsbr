@@ -60,12 +60,12 @@
 
 .list_prn_tratamento <- c(
   "senhor", "senhora", "senhorita", "voc\u00ea",
-  "vossa alteza", "vossa emin\u00eancia", "vossa excel\u00eancia",
+  "vossa alteza", "vossa emin\u00eancia", "vossa excel\u00eancia", "v.exa",
   "vossa magnific\u00eancia", "vossa majestade",
   "vossa majestade imperial", "vossa merc\u00ea",
   "vossa onipot\u00eancia", "vossa paternidade",
   "vossa reverend\u00edssima", "vossa santidade",
-  "vossa senhoria", "sr.", "sr.\u00aa", "srta.", "v.", "v. a.",
+  "vossa senhoria", "sr.", "srs", "sras", "sr.\u00aa", "srta.", "v.", "v. a.",
   "v. em.\u00aa", "v. ex.\u00aa", "v. m.", "v. m. i.",
   "v. mag.\u00aa", "v. rev.m\u00aa", "v. s.", "v. s.\u00aa",
   "v.m.c\u00ea", "v.p"
@@ -84,9 +84,11 @@
 )
 
 .list_prn_demonstrativos <- c(
-  "este", "esta", "estes", "estas",
+  "este", "esta", "estes", "estas", "desta", "destas", 
+  "deste", "destes", "neste", "nestes", "nesta", "nestas",
   "esse", "essa", "esses", "essas",
   "aquele", "aquela", "aqueles", "aquelas",
+  "naquele", "naqueles", "naquela", "naquelas",
   "isto", "isso", "aquilo",
   "pr\u00f3pria", "pr\u00f3prias", "pr\u00f3prio", "pr\u00f3prios",
   "semelhante", "semelhantes",
